@@ -8,4 +8,7 @@ The built binary is not signed. Run in test mode.
 Features
 - Scan binary patterns in kernel drivers
 - Hide the driver
+  + Traversing PsLoadedModuleList
+  + Traversing ObjectDirectory
 - Detect hidden drivers
+  + Enumerating ObjectName 
