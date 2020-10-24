@@ -8,8 +8,8 @@ The built binary is not signed. Run in test mode.
 Features
 - Scan binary patterns in kernel drivers
 - Hide the driver
-  + Traversing PsLoadedModuleList
-  + Traversing ObjectDirectory
+  + Breaking the chain of LDR_DATA_TABLE_ENTRY(PsLoadedModuleList)
+  + Breaking the chain of OBJECT_DIRECTORY_ENTRY
 - Detect hidden drivers
-  + Enumerating ObjectName 
-  + Scanning "MmLd" in Kernel-memory
+  + Enumerating Object Name 
+  + Scanning "MmLd"(LDR_DATA_TABLE_ENTRY) in Kernel-memory
