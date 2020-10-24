@@ -12,3 +12,4 @@ Features
   + Traversing ObjectDirectory
 - Detect hidden drivers
   + Enumerating ObjectName 
+  + Detecting "MmLd" via Kernel-memory
