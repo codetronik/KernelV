@@ -5,7 +5,7 @@ Tested on Windows 10 Build 19041 64-bit version.
 
 The built binary is not signed. Run in test mode.
 
-Features
+## Features
 - Scan binary patterns in kernel drivers
 - Hide the driver
   + Breaking the chain of LDR_DATA_TABLE_ENTRY(PsLoadedModuleList)
