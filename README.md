@@ -17,4 +17,5 @@ The built binary is not signed. Run in test mode.
 
 ## Pattern Scan 
 Enter one binary pattern per line. Patterns cannot be entered in more than two lines.
+
 The delimiter("\r\n") of the pattern is the Enter key.
