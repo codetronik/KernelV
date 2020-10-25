@@ -14,3 +14,7 @@ The built binary is not signed. Run in test mode.
 - Detect hidden drivers
   + Enumerating Object Name 
   + Scanning "MmLd"(LDR_DATA_TABLE_ENTRY) in Kernel-memory
+
+## Pattern Scan 
+Enter one binary pattern per line. Patterns cannot be entered in more than two lines.
+The delimiter("\r\n") of the pattern is the Enter key.
