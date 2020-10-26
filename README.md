@@ -16,6 +16,7 @@ The built binary is not signed. Run in test mode.
   + Scanning "MmLd"(LDR_DATA_TABLE_ENTRY) in Kernel-memory
 
 ## Pattern Scan 
+![image](https://raw.githubusercontent.com/codetronik/KernelV/master/screenshots/scanpattern.png)
 Enter one binary pattern per line. Patterns cannot be entered in more than two lines.
 
 The delimiter("\r\n") of the pattern is the Enter key.
