@@ -19,3 +19,6 @@ The built binary is not signed. Run in test mode.
 Enter one binary pattern per line. Patterns cannot be entered in more than two lines.
 
 The delimiter("\r\n") of the pattern is the Enter key.
+
+## Precautions
+If you hide ntoskrnl.exe or myself, the next run may fail.
