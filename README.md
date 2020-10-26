@@ -1,9 +1,11 @@
 # KernelV
 ![image](https://raw.githubusercontent.com/codetronik/KernelV/master/screenshots/mainmenu.png)
 
+Rootkit & Anti-Rootkit (Windows 10 x64 only)
+
 Download : https://github.com/codetronik/KernelV/releases
 
-Windows 10 x64 only
+
 
 Built in Visual Studio 2019 + wdk 10.0.19041.0
 
