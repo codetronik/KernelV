@@ -3,7 +3,7 @@
 
 Download : https://github.com/codetronik/KernelV/releases
 
-64 bit only
+Windows 10 x64 only
 
 Built in Visual Studio 2019 + wdk 10.0.19041.0
 
