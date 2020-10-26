@@ -1,6 +1,8 @@
 # KernelV
 ![image](https://raw.githubusercontent.com/codetronik/KernelV/master/screenshots/mainmenu.png)
 
+Download : https://github.com/codetronik/KernelV/releases
+
 64 bit only
 
 Built in Visual Studio 2019 + wdk 10.0.19041.0
