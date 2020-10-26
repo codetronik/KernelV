@@ -27,6 +27,7 @@ The delimiter("\r\n") of the pattern is the Enter key.
 
 ## Precautions
 If you hide ntoskrnl.exe or myself, the next run may fail.
+
 Hiding a driver can cause BSOD. (19 : Loaded module list modification)
 
 
