@@ -16,7 +16,7 @@
 PDRIVER_OBJECT g_pDriverObject;
 
 
-#define DEVICE_NAME	 L"\\Device\\WKernelV"
+#define DEVICE_NAME	 L"\\Device\\KernelV"
 #define DEVICE_LINK	 L"\\DosDevices\\KernelV"
 
 #define IOCTL_KERNELV_LOAD_DRIVER		CTL_CODE(FILE_DEVICE_UNKNOWN, 0x800, METHOD_BUFFERED, FILE_ANY_ACCESS) 
@@ -73,7 +73,7 @@ UINT IOCTLScan(PBYTE pUserInput, ULONG InputBufferSize)
 		PBYTE pPosEnd = MemSearch(pPattern, nRemainSize, pEnd, 3);
 		if (pPosStart == NULL || pPosEnd == NULL)
 		{
-			kprintf("fuck.."); // ¹ß»ıÇÏ¸é ¾ÈµÊ
+			kprintf("fuck.."); // ë°œìƒí•˜ë©´ ì•ˆë¨
 			break;
 		}
 
@@ -105,8 +105,8 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 	ULONG InputBufferSize = 0;
 	ULONG OutputBufferSize = 0;
 
-	InputBufferSize = pIoStackIrp->Parameters.DeviceIoControl.InputBufferLength; // ring3¿¡¼­ ÀÎÀÚ·Î °¡Á®¿È
-	OutputBufferSize = pIoStackIrp->Parameters.DeviceIoControl.OutputBufferLength; // ring3¿¡ ¸®ÅÏÇÒ ¿¹Á¤
+	InputBufferSize = pIoStackIrp->Parameters.DeviceIoControl.InputBufferLength; // ring3ì—ì„œ ì¸ìë¡œ ê°€ì ¸ì˜´
+	OutputBufferSize = pIoStackIrp->Parameters.DeviceIoControl.OutputBufferLength; // ring3ì— ë¦¬í„´í•  ì˜ˆì •
 	kprintf("InputBufferSize : %lu / OutputBufferSize: %lu", InputBufferSize, OutputBufferSize);
 
 	if (IOCTL_KERNELV_SCAN_PATTERN == pIoStackIrp->Parameters.DeviceIoControl.IoControlCode)
@@ -119,12 +119,12 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 
 			UINT NeedSize = 0;		
 						
-			// output±æÀÌ°¡ ±Ã±İÇÑ °æ¿ì		
+			// outputê¸¸ì´ê°€ ê¶ê¸ˆí•œ ê²½ìš°		
 			if (OutputBufferSize == 0)
 			{
 				InitDetectListEntry();
 				nPatternCnt = IOCTLScan(pRecvBuffer, InputBufferSize);
-				if (nPatternCnt == 0) // ¹ß»ıÇÏ¸é ¾ÈµÊ
+				if (nPatternCnt == 0) // ë°œìƒí•˜ë©´ ì•ˆë¨
 				{
 					kprintf("No pattern was found.");
 					pIrp->IoStatus.Information = 0;
@@ -136,16 +136,16 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 				kprintf("OutputBuffer is too small.");
 				kprintf("need Size : %d", NeedSize);
 				pIrp->IoStatus.Information = NeedSize; // need size
-				pIrp->IoStatus.Status = STATUS_SUCCESS; // success·Î ÇÏÁö ¾ÊÀ¸¸é NeedSize°¡ ¸®ÅÏµÇÁö ¾Ê´Â´Ù.
+				pIrp->IoStatus.Status = STATUS_SUCCESS; // successë¡œ í•˜ì§€ ì•Šìœ¼ë©´ NeedSizeê°€ ë¦¬í„´ë˜ì§€ ì•ŠëŠ”ë‹¤.
 
 				goto EXIT;
 			}
 			/*
-				2¹øÂ° IOCTL_KERNELV_SCAN_PATTERN ¿äÃ» Ã³¸®
+				2ë²ˆì§¸ IOCTL_KERNELV_SCAN_PATTERN ìš”ì²­ ì²˜ë¦¬
 			*/
-			// ¹öÆÛ¿¡ º¹»ç
+			// ë²„í¼ì— ë³µì‚¬
 			PDETECT_LIST_ENTRY pSendMem = pIrp->AssociatedIrp.SystemBuffer;
-			// user mode¿¡¼­ ³Ñ¾î¿Â Æ÷ÀÎÅÍ	
+			// user modeì—ì„œ ë„˜ì–´ì˜¨ í¬ì¸í„°	
 			if (!MmIsAddressValid(pSendMem))
 			{
 				kprintf("input buffer is wrong");
@@ -185,7 +185,7 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 	if (IOCTL_KERNELV_HIDE_DRIVER == pIoStackIrp->Parameters.DeviceIoControl.IoControlCode)
 	{	
 		kprintf("===IOCTL_KERNELV_HIDE_DRIVER===");
-		//	L"%s::%s" ÇüÅÂ
+		//	L"%s::%s" í˜•íƒœ
 		LPWSTR pReceiveString = pIrp->AssociatedIrp.SystemBuffer;
 		kprintf("pDriverPath : %ws InputBufferSize : %d", pReceiveString, InputBufferSize);		
 		LPWSTR pPos = wcsstr(pReceiveString, L"::");
@@ -220,7 +220,7 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 		
 		UINT NeedSize = 0;
 
-		// output±æÀÌ°¡ ±Ã±İÇÑ °æ¿ì		
+		// outputê¸¸ì´ê°€ ê¶ê¸ˆí•œ ê²½ìš°		
 		if (OutputBufferSize == 0)
 		{
 			EnumerateDrivers();
@@ -228,16 +228,16 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 			kprintf("OutputBuffer is too small.");
 			kprintf("need Size : %d", NeedSize);
 			pIrp->IoStatus.Information = NeedSize; // need size
-			pIrp->IoStatus.Status = STATUS_SUCCESS; // success·Î ÇÏÁö ¾ÊÀ¸¸é NeedSize°¡ ¸®ÅÏµÇÁö ¾Ê´Â´Ù.
+			pIrp->IoStatus.Status = STATUS_SUCCESS; // successë¡œ í•˜ì§€ ì•Šìœ¼ë©´ NeedSizeê°€ ë¦¬í„´ë˜ì§€ ì•ŠëŠ”ë‹¤.
 			
 			goto EXIT;
 		}
 		
 		/*
-			2¹øÂ° IOCTL_KERNELV_LOAD_DRIVER ¿äÃ» Ã³¸®
+			2ë²ˆì§¸ IOCTL_KERNELV_LOAD_DRIVER ìš”ì²­ ì²˜ë¦¬
 		*/
 
-		// user mode¿¡¼­ ³Ñ¾î¿Â Æ÷ÀÎÅÍ	
+		// user modeì—ì„œ ë„˜ì–´ì˜¨ í¬ì¸í„°	
 		if (!MmIsAddressValid(pSendMem))
 		{
 			kprintf("input buffer is wrong");
@@ -246,7 +246,7 @@ NTSTATUS IoControlDispatch(PDEVICE_OBJECT pDeviceObject, PIRP pIrp)
 			goto EXIT;
 		}
 		
-		// output ¹öÆÛ¿¡ º¹»ç
+		// output ë²„í¼ì— ë³µì‚¬
 		PDRIVER_LIST_ENTRY pDriverListEntry = NULL;
 		int nIndex = 0;
 		while (TRUE)
