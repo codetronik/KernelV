@@ -1,4 +1,4 @@
-#include "util.h"
+﻿#include "util.h"
 
 
 PUCHAR MemSearch(PUCHAR pBuffer, int nBufferSize, PUCHAR pPattern, int nPatternSize)

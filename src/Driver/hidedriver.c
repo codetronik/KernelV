@@ -1,4 +1,4 @@
-#include <ntifs.h>
+ï»¿#include <ntifs.h>
 #include <ntddk.h>
 #include <wdm.h>
 #include <ntimage.h>
@@ -27,12 +27,12 @@ BOOLEAN HideDriverViaPsLoadedModuleList(PCWSTR szFileName)
 		if (0 == wcscmp((PCWSTR)Entry->FullDllName.Buffer, szFileName))
 		{
 			kprintf("found");
-			prevEntry = (PLDR_DATA_TABLE_ENTRY)Entry->InLoadOrderLinks.Blink; // ÀÌÀü ³ëµå
-			nextEntry = (PLDR_DATA_TABLE_ENTRY)Entry->InLoadOrderLinks.Flink; // ´ÙÀ½ ³ëµå
-			prevEntry->InLoadOrderLinks.Flink = Entry->InLoadOrderLinks.Flink; // ÀÌÀü ³ëµåÀÇ ´ÙÀ½À» ³» ´ÙÀ½À¸·Î ¹Ù²Þ
-			nextEntry->InLoadOrderLinks.Blink = Entry->InLoadOrderLinks.Blink; // ´ÙÀ½ ³ëµåÀÇ ÀÌÀüÀ» ³» ÀÌÀü·Î ¹Ù²Þ 
-			// ³» ³ëµåÀÇ ¾Õ, µÚ¸¦ ³ª ÀÚ½ÅÀ¸·Î ¹Ù²Þ
-			// ¹Ù²ÙÁö ¾Ê´Â´Ù¸é µå¶óÀÌ¹ö ¼­ºñ½º¸¦ stopÇÒ¶§ BSOD¹ß»ý (KERNEL SECURITY CHECK FAILURE)
+			prevEntry = (PLDR_DATA_TABLE_ENTRY)Entry->InLoadOrderLinks.Blink; // ì´ì „ ë…¸ë“œ
+			nextEntry = (PLDR_DATA_TABLE_ENTRY)Entry->InLoadOrderLinks.Flink; // ë‹¤ìŒ ë…¸ë“œ
+			prevEntry->InLoadOrderLinks.Flink = Entry->InLoadOrderLinks.Flink; // ì´ì „ ë…¸ë“œì˜ ë‹¤ìŒì„ ë‚´ ë‹¤ìŒìœ¼ë¡œ ë°”ê¿ˆ
+			nextEntry->InLoadOrderLinks.Blink = Entry->InLoadOrderLinks.Blink; // ë‹¤ìŒ ë…¸ë“œì˜ ì´ì „ì„ ë‚´ ì´ì „ë¡œ ë°”ê¿ˆ 
+			// ë‚´ ë…¸ë“œì˜ ì•ž, ë’¤ë¥¼ ë‚˜ ìžì‹ ìœ¼ë¡œ ë°”ê¿ˆ
+			// ë°”ê¾¸ì§€ ì•ŠëŠ”ë‹¤ë©´ ë“œë¼ì´ë²„ ì„œë¹„ìŠ¤ë¥¼ stopí• ë•Œ BSODë°œìƒ (KERNEL SECURITY CHECK FAILURE)
 			Entry->InLoadOrderLinks.Flink = (PLIST_ENTRY)Entry;
 			Entry->InLoadOrderLinks.Blink = (PLIST_ENTRY)Entry;
 			Hide = TRUE;
@@ -46,8 +46,8 @@ BOOLEAN HideDriverViaPsLoadedModuleList(PCWSTR szFileName)
 
 
 /* hide DRIVER_OBJECT
-* service ÀÌ¸§°ú DRIVER_OBJECT°¡ ¸ñ·Ï¿¡¼­ ³¯¶ó°¨
-* "\\Driver" À¸·Î ¿ÀºêÁ§Æ® ¸ñ·Ï ±¸ÇÏ´Â°Í°ú ¿ÏÀüÈ÷ µ¿ÀÏÇÔ
+* service ì´ë¦„ê³¼ DRIVER_OBJECTê°€ ëª©ë¡ì—ì„œ ë‚ ë¼ê°
+* "\\Driver" ìœ¼ë¡œ ì˜¤ë¸Œì íŠ¸ ëª©ë¡ êµ¬í•˜ëŠ”ê²ƒê³¼ ì™„ì „ížˆ ë™ì¼í•¨
 */
 BOOLEAN HideDriverFromObjectDirectory(PUNICODE_STRING pDriverName)
 {
@@ -75,7 +75,7 @@ BOOLEAN HideDriverFromObjectDirectory(PUNICODE_STRING pDriverName)
 		POBJECT_DIRECTORY_ENTRY pBlinkObjectDirectoryEntry = NULL;
 		POBJECT_DIRECTORY_ENTRY pObjectDirectoryEntry = pObjectDirectory->HashBuckets[p];
 		
-		// HashBuckets °¡ NULL ÀÎ °æ¿ìµµ ¸¹À½ (´ëÇ¥ÀûÀ¸·Î \FileSystem)
+		// HashBuckets ê°€ NULL ì¸ ê²½ìš°ë„ ë§ŽìŒ (ëŒ€í‘œì ìœ¼ë¡œ \FileSystem)
 		if (!MmIsAddressValid(pObjectDirectoryEntry))
 		{
 			continue;	
@@ -97,24 +97,24 @@ BOOLEAN HideDriverFromObjectDirectory(PUNICODE_STRING pDriverName)
 			{
 				kprintf("pObjectDirectoryEntry : %p", pObjectDirectoryEntry);
 				kprintf("[%d %d] >>> %wZ", p, count++, pObjectHeaderNameInfo->Name);
-				// Ã¼ÀÎÀÇ 0¹øÂ°(=Çìµå)°¡ ÀÚ½ÅÀÇ EntryÀÏ¶§
+				// ì²´ì¸ì˜ 0ë²ˆì§¸(=í—¤ë“œ)ê°€ ìžì‹ ì˜ Entryì¼ë•Œ
 				if (pObjectDirectory->HashBuckets[p] == pObjectDirectoryEntry)
 				{
 					kprintf("[Found] head node\n");
-					pObjectDirectory->HashBuckets[p] = pObjectDirectoryEntry->ChainLink; // ÀÚ½ÅEntryÀÇ ´ÙÀ½ Entry¸¦ Çìµå·Î ¸¸µç´Ù.
+					pObjectDirectory->HashBuckets[p] = pObjectDirectoryEntry->ChainLink; // ìžì‹ Entryì˜ ë‹¤ìŒ Entryë¥¼ í—¤ë“œë¡œ ë§Œë“ ë‹¤.
 					pObjectDirectoryEntry->ChainLink = NULL;
 				}
-				else // 1¹øÂ°ºÎÅÍ
+				else // 1ë²ˆì§¸ë¶€í„°
 				{
 					kprintf("[Found] no head node\n");
-					pBlinkObjectDirectoryEntry->ChainLink = pObjectDirectoryEntry->ChainLink; // ÀÌÀü EntryÀÇ ´ÙÀ½ Entry¸¦ ³» ´ÙÀ½ Entry·Î °¡¸®Å²´Ù.
+					pBlinkObjectDirectoryEntry->ChainLink = pObjectDirectoryEntry->ChainLink; // ì´ì „ Entryì˜ ë‹¤ìŒ Entryë¥¼ ë‚´ ë‹¤ìŒ Entryë¡œ ê°€ë¦¬í‚¨ë‹¤.
 					pObjectDirectoryEntry->ChainLink = NULL;
 				}
 				bRet = TRUE;
 				goto EXIT;
 			}			
 
-			pBlinkObjectDirectoryEntry = pObjectDirectoryEntry; // 0ÀÌ ¾Æ´Ñ n¹øÂ° Entry¿¡¼­ Ã¼ÀÎÀÌ ²÷¾îÁú¶§¸¦ ´ëºñ
+			pBlinkObjectDirectoryEntry = pObjectDirectoryEntry; // 0ì´ ì•„ë‹Œ në²ˆì§¸ Entryì—ì„œ ì²´ì¸ì´ ëŠì–´ì§ˆë•Œë¥¼ ëŒ€ë¹„
 			pObjectDirectoryEntry = pObjectDirectoryEntry->ChainLink;
 
 		}
@@ -126,17 +126,17 @@ EXIT:
 
 VOID HideMyself()
 {
-	//KIRQL irql = KeRaiseIrqlToDpcLevel(); // µ¿ÀÛÀÌ Àß ¾ÈµÇ¸é IRQL »ó½Â
+	//KIRQL irql = KeRaiseIrqlToDpcLevel(); // ë™ìž‘ì´ ìž˜ ì•ˆë˜ë©´ IRQL ìƒìŠ¹
 	PLDR_DATA_TABLE_ENTRY currentEntry = (PLDR_DATA_TABLE_ENTRY)g_pDriverObject->DriverSection;
 	PLDR_DATA_TABLE_ENTRY prevEntry, nextEntry;
 
-	prevEntry = (PLDR_DATA_TABLE_ENTRY)currentEntry->InLoadOrderLinks.Blink; // ÀÌÀü ³ëµå
-	nextEntry = (PLDR_DATA_TABLE_ENTRY)currentEntry->InLoadOrderLinks.Flink; // ´ÙÀ½ ³ëµå
-	prevEntry->InLoadOrderLinks.Flink = currentEntry->InLoadOrderLinks.Flink; // ÀÌÀü ³ëµåÀÇ ´ÙÀ½À» ³» ´ÙÀ½À¸·Î ¹Ù²Þ
-	nextEntry->InLoadOrderLinks.Blink = currentEntry->InLoadOrderLinks.Blink; // ´ÙÀ½ ³ëµåÀÇ ÀÌÀüÀ» ³» ÀÌÀü·Î ¹Ù²Þ 
+	prevEntry = (PLDR_DATA_TABLE_ENTRY)currentEntry->InLoadOrderLinks.Blink; // ì´ì „ ë…¸ë“œ
+	nextEntry = (PLDR_DATA_TABLE_ENTRY)currentEntry->InLoadOrderLinks.Flink; // ë‹¤ìŒ ë…¸ë“œ
+	prevEntry->InLoadOrderLinks.Flink = currentEntry->InLoadOrderLinks.Flink; // ì´ì „ ë…¸ë“œì˜ ë‹¤ìŒì„ ë‚´ ë‹¤ìŒìœ¼ë¡œ ë°”ê¿ˆ
+	nextEntry->InLoadOrderLinks.Blink = currentEntry->InLoadOrderLinks.Blink; // ë‹¤ìŒ ë…¸ë“œì˜ ì´ì „ì„ ë‚´ ì´ì „ë¡œ ë°”ê¿ˆ 
 
-	// ³» ³ëµåÀÇ ¾Õ, µÚ¸¦ ³ª ÀÚ½ÅÀ¸·Î ¹Ù²Þ
-	// ¹Ù²ÙÁö ¾Ê´Â´Ù¸é µå¶óÀÌ¹ö ¼­ºñ½º¸¦ stopÇÒ¶§ BSOD¹ß»ý (KERNEL SECURITY CHECK FAILURE)
+	// ë‚´ ë…¸ë“œì˜ ì•ž, ë’¤ë¥¼ ë‚˜ ìžì‹ ìœ¼ë¡œ ë°”ê¿ˆ
+	// ë°”ê¾¸ì§€ ì•ŠëŠ”ë‹¤ë©´ ë“œë¼ì´ë²„ ì„œë¹„ìŠ¤ë¥¼ stopí• ë•Œ BSODë°œìƒ (KERNEL SECURITY CHECK FAILURE)
 	currentEntry->InLoadOrderLinks.Flink = (PLIST_ENTRY)currentEntry;
 	currentEntry->InLoadOrderLinks.Blink = (PLIST_ENTRY)currentEntry;
 

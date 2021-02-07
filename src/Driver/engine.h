@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "listentry.h"
 
 VOID GetPsLoadedModuleList();

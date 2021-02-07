@@ -1,4 +1,4 @@
-// https://github.com/swatkat/arkitlib/tree/master/ARKitDrv ÂüÁ¶ÇØ¼­ ¸¸µê
+ï»¿// https://github.com/swatkat/arkitlib/tree/master/ARKitDrv ì°¸ì¡°í•´ì„œ ë§Œë“¦
 
 #include "listentry.h"
 #include "define.h"
@@ -19,7 +19,7 @@ void FreeDriverListEntry(int type)
 
 	while (!IsListEmpty(pListDriverEntry[type]))
 	{
-		// ¸®½ºÆ®¿¡¼­ ÇÏ³ª ²¨³¿
+		// ë¦¬ìŠ¤íŠ¸ì—ì„œ í•˜ë‚˜ êº¼ëƒ„
 		PLIST_ENTRY pEntry = RemoveHeadList(pListDriverEntry[type]);
 		PDRIVER_LIST_ENTRY pDriverEntry = CONTAINING_RECORD(pEntry, DRIVER_LIST_ENTRY, Entry);
 		if (MmIsAddressValid(pDriverEntry))
@@ -38,7 +38,7 @@ void FreeDriverListEntry(int type)
 
 void InitDriverListEntry(int type)
 {		
-	// ÀÌ¹Ì Á¸ÀçÇÏ¸é Áö¿ì°í ¸¸µê : IOCTL_KERNELV_SCAN_PATTERN ¿äÃ»½Ã ±âÁ¸ pListDriverEntry°¡ ÇÊ¿äÇÏ¹Ç·Î free¸¦ ¼öÇàÇÏ¸é ¾ÈµÊ. ±×·¡¼­ reinitÀÌ Á¸ÀçÇÔ.
+	// ì´ë¯¸ ì¡´ì¬í•˜ë©´ ì§€ìš°ê³  ë§Œë“¦ : IOCTL_KERNELV_SCAN_PATTERN ìš”ì²­ì‹œ ê¸°ì¡´ pListDriverEntryê°€ í•„ìš”í•˜ë¯€ë¡œ freeë¥¼ ìˆ˜í–‰í•˜ë©´ ì•ˆë¨. ê·¸ë˜ì„œ reinitì´ ì¡´ì¬í•¨.
 	if (MmIsAddressValid(pListDriverEntry[type]))
 	{
 		kprintf("reinit (type : %d)", type);
@@ -58,7 +58,7 @@ void InitDriverListEntry(int type)
 
 void AddDriverListEntry(int type, PDRIVER_LIST_ENTRY pDriverEntry)
 {
-	// »õ·Ó°Ô ºÙÀÌ´Â entry »ı¼º
+	// ìƒˆë¡­ê²Œ ë¶™ì´ëŠ” entry ìƒì„±
 	PDRIVER_LIST_ENTRY pNewEntry = NULL;
 	pNewEntry = ExAllocatePoolWithTag(NonPagedPool, sizeof(DRIVER_LIST_ENTRY), POOL_TAG);	
 	if (NULL == pNewEntry)
@@ -114,7 +114,7 @@ void GetDriverListEntry(int type, UINT nPosition, DRIVER_LIST_ENTRY** ppDriverLi
 			break;
 		}		
 		
-		// ÇÑ¹ÙÄû ´Ù µ¹¸é ¸ØÃã
+		// í•œë°”í€´ ë‹¤ ëŒë©´ ë©ˆì¶¤
 		if (pEntry == pListDriverEntry[type])
 		{		
 			break;
@@ -135,7 +135,7 @@ void GetDriverListEntry(int type, UINT nPosition, DRIVER_LIST_ENTRY** ppDriverLi
 
 void InitDetectListEntry()
 {
-	// pListDetectEntry´Â °è¼Ó ¸Ş¸ğ¸®¿¡ ³²±æ ÇÊ¿ä°¡ ¾øÀ¸¹Ç·Î reinitÀÌ Á¸ÀçÇÒ ÇÊ¿ä°¡ ¾øÀ½
+	// pListDetectEntryëŠ” ê³„ì† ë©”ëª¨ë¦¬ì— ë‚¨ê¸¸ í•„ìš”ê°€ ì—†ìœ¼ë¯€ë¡œ reinitì´ ì¡´ì¬í•  í•„ìš”ê°€ ì—†ìŒ
 	if (MmIsAddressValid(pListDetectEntry))
 	{
 		kprintf("reinit pListDetectEntry");
@@ -163,7 +163,7 @@ void FreeDetectListEntry()
 
 	while (!IsListEmpty(pListDetectEntry))
 	{
-		// ¸®½ºÆ®¿¡¼­ ÇÏ³ª ²¨³¿
+		// ë¦¬ìŠ¤íŠ¸ì—ì„œ í•˜ë‚˜ êº¼ëƒ„
 		PLIST_ENTRY pEntry = RemoveHeadList(pListDetectEntry);
 		PDETECT_LIST_ENTRY pDetectEntry = CONTAINING_RECORD(pEntry, DETECT_LIST_ENTRY, Entry);
 		if (MmIsAddressValid(pDetectEntry))
@@ -186,7 +186,7 @@ void AddDetectListEntry(PDETECT_LIST_ENTRY pDetectEntry)
 		return;
 	}
 
-	// »õ·Ó°Ô ºÙÀÌ´Â entry »ı¼º
+	// ìƒˆë¡­ê²Œ ë¶™ì´ëŠ” entry ìƒì„±
 	PDETECT_LIST_ENTRY pNewEntry = NULL;
 	pNewEntry = ExAllocatePoolWithTag(NonPagedPool, sizeof(DETECT_LIST_ENTRY), POOL_TAG);
 	if (NULL == pNewEntry)
@@ -222,7 +222,7 @@ void GetDetectListEntry(UINT nPosition, DETECT_LIST_ENTRY** ppDetectListEntry)
 			break;
 		}
 
-		// ÇÑ¹ÙÄû ´Ù µ¹¸é ¸ØÃã
+		// í•œë°”í€´ ë‹¤ ëŒë©´ ë©ˆì¶¤
 		if (pEntry == pListDetectEntry)
 		{
 			break;

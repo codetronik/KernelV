@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include <ntddk.h>
 
 NTSTATUS NTAPI MmCopyVirtualMemory
@@ -99,7 +99,7 @@ typedef struct _LDR_DATA_TABLE_ENTRY
 	UCHAR FlagGroup[4];	
 	USHORT ObsoleteLoadCount;
 	/*
-		¿Ã«œ ∫“« ø‰«ÿº≠ ªË¡¶
+		Ïù¥Ìïò Î∂àÌïÑÏöîÌï¥ÏÑú ÏÇ≠Ï†ú
 	*/
 } LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
 

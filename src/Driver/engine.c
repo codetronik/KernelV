@@ -1,4 +1,4 @@
-#include <ntifs.h>
+ï»¿#include <ntifs.h>
 #include <ntddk.h>
 #include <wdm.h>
 #include <ntimage.h>
@@ -24,8 +24,8 @@ PLDR_DATA_TABLE_ENTRY PsLoadedModuleList;
 
 VOID EnumerateEPROCESS(PUCHAR pTargetFileName)
 {
-	// system(pid:4)ÀÇ EPROCESS ¸¦ ¹İÈ¯ÇÔ
-	PEPROCESS pCurrentProcess = PsInitialSystemProcess; /* PsGetCurrentProcess() ¿Í °°À½ */
+	// system(pid:4)ì˜ EPROCESS ë¥¼ ë°˜í™˜í•¨
+	PEPROCESS pCurrentProcess = PsInitialSystemProcess; /* PsGetCurrentProcess() ì™€ ê°™ìŒ */
 	PLIST_ENTRY pCurrentListEntry = NULL;
 
 	while (TRUE)
@@ -34,34 +34,34 @@ VOID EnumerateEPROCESS(PUCHAR pTargetFileName)
 		pCurrentListEntry = (PLIST_ENTRY)((uintptr_t)pCurrentProcess + EPROCESS_ACTIVE_PROCESS_LINKS);
 		PEPROCESS pNextProcess = (PEPROCESS)((uintptr_t)pCurrentListEntry->Flink - EPROCESS_ACTIVE_PROCESS_LINKS);
 
-		/* ±¸Á¶Ã¼¿¡¼­ ±¸ÇÏ±â
+		/* êµ¬ì¡°ì²´ì—ì„œ êµ¬í•˜ê¸°
 		size_t dwPid = *((uintptr_t*)((uintptr_t)pCurrentProcess + EPROCESS_UNIQUE_PROCESS_ID));
 		char* pImageFileName = (char*)((uintptr_t)pCurrentProcess + EPROCESS_IMAGE_FILE_NAME);
 		*/
 
-		// build ¹öÀü¸¶´Ù ¿ÀÇÁ¼ÂÀÌ ´Ù¸£±â¶§¹®¿¡ °¡±ŞÀû api¸¦ »ç¿ë
+		// build ë²„ì „ë§ˆë‹¤ ì˜¤í”„ì…‹ì´ ë‹¤ë¥´ê¸°ë•Œë¬¸ì— ê°€ê¸‰ì  apië¥¼ ì‚¬ìš©
 		size_t dwPid = (size_t)PsGetProcessId(pCurrentProcess);
 		dwPid = 0;
-		UCHAR* pImageFileName = PsGetProcessImageFileName(pCurrentProcess); // Á¦´ë·Î ¸ø°¡Á®¿È.
+		UCHAR* pImageFileName = PsGetProcessImageFileName(pCurrentProcess); // ì œëŒ€ë¡œ ëª»ê°€ì ¸ì˜´.
 
 		kprintf("%p %s %lld", pCurrentProcess, PsGetProcessImageFileName(pCurrentProcess), dwPid);
 
-		// process ¼û±â±â
-		// ¼ö ºĞ ÀÌ³»·Î patch guard¿¡ ÀÇÇÑ BSOD ¹ß»ı (CRITICAL STRUCTURE CORRUPTION)
-		// ÂüÁ¶ : https://www.sysnet.pe.kr/2/0/12110
+		// process ìˆ¨ê¸°ê¸°
+		// ìˆ˜ ë¶„ ì´ë‚´ë¡œ patch guardì— ì˜í•œ BSOD ë°œìƒ (CRITICAL STRUCTURE CORRUPTION)
+		// ì°¸ì¡° : https://www.sysnet.pe.kr/2/0/12110
 		if (0 == strcmp((char*)pTargetFileName, (char*)pImageFileName))
 		{
 			kprintf("hide process\n");
 			PLIST_ENTRY pPrevListEntry = pCurrentListEntry->Blink;
 			PLIST_ENTRY pNextListEntry = pCurrentListEntry->Flink;
-			pPrevListEntry->Flink = pCurrentListEntry->Flink;  // ÀÌÀü ³ëµåÀÇ ´ÙÀ½À» ³» ´ÙÀ½À¸·Î ¹Ù²Ş
-			pNextListEntry->Blink = pCurrentListEntry->Blink; // ´ÙÀ½ ³ëµåÀÇ ÀÌÀüÀ» ³» ÀÌÀü·Î ¹Ù²Ş 
+			pPrevListEntry->Flink = pCurrentListEntry->Flink;  // ì´ì „ ë…¸ë“œì˜ ë‹¤ìŒì„ ë‚´ ë‹¤ìŒìœ¼ë¡œ ë°”ê¿ˆ
+			pNextListEntry->Blink = pCurrentListEntry->Blink; // ë‹¤ìŒ ë…¸ë“œì˜ ì´ì „ì„ ë‚´ ì´ì „ë¡œ ë°”ê¿ˆ 
 
 			pCurrentListEntry->Flink = pCurrentListEntry;
 			pCurrentListEntry->Blink = pCurrentListEntry;
 		}
 
-		/* ring3 ÇÁ·Î¼¼½ºÀÎÁö °Ë»çÇÏ´Â ·çÆ¾ ÇÊ¿ä
+		/* ring3 í”„ë¡œì„¸ìŠ¤ì¸ì§€ ê²€ì‚¬í•˜ëŠ” ë£¨í‹´ í•„ìš”
 		if (PsGetProcessPeb(pCurrentProcess))
 		{
 			PPEB ppp = PsGetProcessPeb(pCurrentProcess);
@@ -70,7 +70,7 @@ VOID EnumerateEPROCESS(PUCHAR pTargetFileName)
 		}
 		*/
 
-		// ¿øÇü ±¸Á¶¶ó breakÇÏÁö ¾ÊÀ¸¸é ¹«ÇÑÀ¸·Î µ¹¾Æ°¨
+		// ì›í˜• êµ¬ì¡°ë¼ breakí•˜ì§€ ì•Šìœ¼ë©´ ë¬´í•œìœ¼ë¡œ ëŒì•„ê°
 		if (pNextProcess == PsInitialSystemProcess)
 		{
 			break;
@@ -92,10 +92,10 @@ VOID ScanMemory(UINT PatternNo, uintptr_t StartAddr, uintptr_t EndAddr, PBYTE Pa
 	}
 	__try
 	{
-		// page »çÀÌÁî ´ÜÀ§·Î °Ë»ö
+		// page ì‚¬ì´ì¦ˆ ë‹¨ìœ„ë¡œ ê²€ìƒ‰
 		for (uintptr_t Addr = StartAddr; Addr < EndAddr; Addr = Addr + PAGE_SIZE)
 		{
-			// Æ¯Á¤ sectionÀº ¸Ş¸ğ¸® Á¢±ÙÀÌ ºÒ°¡´ÉÇÏ±â ¶§¹®¿¡ skipÇÔ
+			// íŠ¹ì • sectionì€ ë©”ëª¨ë¦¬ ì ‘ê·¼ì´ ë¶ˆê°€ëŠ¥í•˜ê¸° ë•Œë¬¸ì— skipí•¨
 			BOOLEAN bValid = MmIsAddressValid((PVOID)Addr);
 			if (bValid == FALSE)
 			{
@@ -112,11 +112,11 @@ VOID ScanMemory(UINT PatternNo, uintptr_t StartAddr, uintptr_t EndAddr, PBYTE Pa
 					PUCHAR pAddr = (PUCHAR)Addr;
 					if (pAddr[i + j] != Pattern[j])
 					{
-						// ÀÏÄ¡ÇÏÁö ¾ÊÀ¸¸é jÀÇ Áõ°¡¸¦ ¸ØÃã
+						// ì¼ì¹˜í•˜ì§€ ì•Šìœ¼ë©´ jì˜ ì¦ê°€ë¥¼ ë©ˆì¶¤
 						break;
 					}
 				}
-				// ÆĞÅÏ °ËÃâ
+				// íŒ¨í„´ ê²€ì¶œ
 				if (j == PatternSize)
 				{
 					DETECT_LIST_ENTRY DetectListEntry = { 0, };
@@ -165,7 +165,7 @@ VOID EnumerateDriversViaPsLoadedModuleList(int type, uintptr_t* OutStartAddr, ui
 		Entry = (PLDR_DATA_TABLE_ENTRY)Entry->InLoadOrderLinks.Flink;
 		modCount++;
 	}
-	// Á¤·Ä
+	// ì •ë ¬
 	uintptr_t temp = 0;
 	for (int i = 0; i < modCount - 1; i++) 
 	{
@@ -181,20 +181,20 @@ VOID EnumerateDriversViaPsLoadedModuleList(int type, uintptr_t* OutStartAddr, ui
 	}
 	kprintf("min max %p %p", EntryArray[modCount - 1], EntryArray[0]);
 	
-	// PAGE_SIZE ´ÜÀ§·Î ÀçÁ¶Á¤
-	// ¼û°ÜÁø entry¸¦ Ã£±â À§ÇØ ¹üÀ§¸¦ ´Ã¸°´Ù.
-	// ¸¸¾à ½ÃÀÛ À§Ä¡°¡ 0xFFFFDC8A51E50C40¶ó¸é
-	// 0x1000000À» alignÇØ¼­ 0xffffdc8a51000000·Î ¸¸µç´Ù.
+	// PAGE_SIZE ë‹¨ìœ„ë¡œ ì¬ì¡°ì •
+	// ìˆ¨ê²¨ì§„ entryë¥¼ ì°¾ê¸° ìœ„í•´ ë²”ìœ„ë¥¼ ëŠ˜ë¦°ë‹¤.
+	// ë§Œì•½ ì‹œì‘ ìœ„ì¹˜ê°€ 0xFFFFDC8A51E50C40ë¼ë©´
+	// 0x1000000ì„ aligní•´ì„œ 0xffffdc8a51000000ë¡œ ë§Œë“ ë‹¤.
 	*OutStartAddr = (EntryArray[modCount-1] & ~(0x1000000 - 1));
 	*OutEndAddr = (EntryArray[0] & ~(0x1000000 - 1))+ 0x1000000;
 	kprintf("min max %p %p", *OutStartAddr, *OutEndAddr);
 
 }
 
-/* ¾àÁ¡ : ¸Ş¸ğ¸® Ç®½ºÄµÀÌ ¾Æ´Ï¶ó LDR ¿£Æ®¸®ÀÇ °¡Àå ÀÛÀº ÁÖ¼Ò ~ °¡Àå Å« ÁÖ¼Ò »çÀÌ¸¦ °Ë»öÇÏ±â ¶§¹®¿¡
-	°¡Àå ÀÛÀº ÁÖ¼Ò³ª °¡Àå Å« ÁÖ¼Ò¸¦ ¼û±â¸é Ã£À» ¼ö ¾ø°Ô µÈ´Ù.
+/* ì•½ì  : ë©”ëª¨ë¦¬ í’€ìŠ¤ìº”ì´ ì•„ë‹ˆë¼ LDR ì—”íŠ¸ë¦¬ì˜ ê°€ì¥ ì‘ì€ ì£¼ì†Œ ~ ê°€ì¥ í° ì£¼ì†Œ ì‚¬ì´ë¥¼ ê²€ìƒ‰í•˜ê¸° ë•Œë¬¸ì—
+	ê°€ì¥ ì‘ì€ ì£¼ì†Œë‚˜ ê°€ì¥ í° ì£¼ì†Œë¥¼ ìˆ¨ê¸°ë©´ ì°¾ì„ ìˆ˜ ì—†ê²Œ ëœë‹¤.
 	
-	¼û°ÜÁø ¸ğµâ¸¸ Ã£´Â´Ù.
+	ìˆ¨ê²¨ì§„ ëª¨ë“ˆë§Œ ì°¾ëŠ”ë‹¤.
 */
 VOID EnumerateDriversViaMmLd(int type, uintptr_t StartAddr, uintptr_t EndAddr)
 {
@@ -203,7 +203,7 @@ VOID EnumerateDriversViaMmLd(int type, uintptr_t StartAddr, uintptr_t EndAddr)
 
 	// "MmLd"
 	BYTE Pattern[4] = { 0x4d, 0x6d, 0x4c, 0x64 };
-	ScanMemory(0x1938, StartAddr, EndAddr, Pattern, 4); // 0x1938Àº ·Î±ëÀ» À§ÇØ¼­.. 0x0À¸·Î ÇØµµ ¹«¹æ
+	ScanMemory(0x1938, StartAddr, EndAddr, Pattern, 4); // 0x1938ì€ ë¡œê¹…ì„ ìœ„í•´ì„œ.. 0x0ìœ¼ë¡œ í•´ë„ ë¬´ë°©
 	
 	UINT nIndex = 0;
 //	int entryCnt = 0;
@@ -222,12 +222,12 @@ VOID EnumerateDriversViaMmLd(int type, uintptr_t StartAddr, uintptr_t EndAddr)
 		__try
 		{		
 			/*
-				¼û°ÜÁø ¸ğµâ¸¸ Ã£´Â´Ù.
+				ìˆ¨ê²¨ì§„ ëª¨ë“ˆë§Œ ì°¾ëŠ”ë‹¤.
 			*/
-			if (pEntry->InLoadOrderLinks.Blink == (PLIST_ENTRY)pEntry // chainÀÌ ²÷¾îÁø °æ¿ì
-				&& pEntry->InLoadOrderLinks.Flink == (PLIST_ENTRY)pEntry // chainÀÌ ²÷¾îÁø °æ¿ì
-				&& pEntry->InInitializationOrderLinks.Flink == NULL 	// À¯È¿ÇÑ ¸ğµâÀº Blink´Â °ªÀÌ ÀÏºÎ ÀÖÁö¸¸ Flink´Â ÁË´Ù nullÀÓ
-				&& pEntry->ObsoleteLoadCount != 0) // ¾ğ·ÎµåµÈ ¸ğµâÀº ObsoleteLoadCount°¡ 0
+			if (pEntry->InLoadOrderLinks.Blink == (PLIST_ENTRY)pEntry // chainì´ ëŠì–´ì§„ ê²½ìš°
+				&& pEntry->InLoadOrderLinks.Flink == (PLIST_ENTRY)pEntry // chainì´ ëŠì–´ì§„ ê²½ìš°
+				&& pEntry->InInitializationOrderLinks.Flink == NULL 	// ìœ íš¨í•œ ëª¨ë“ˆì€ BlinkëŠ” ê°’ì´ ì¼ë¶€ ìˆì§€ë§Œ FlinkëŠ” ì£„ë‹¤ nullì„
+				&& pEntry->ObsoleteLoadCount != 0) // ì–¸ë¡œë“œëœ ëª¨ë“ˆì€ ObsoleteLoadCountê°€ 0
 			{
 				DRIVER_LIST_ENTRY DriverListEntry = { 0, };
 				DriverListEntry.DriverObject = 0;
@@ -316,7 +316,7 @@ BOOLEAN ScanKernelDriverViaAPI()
 	NTSTATUS ntSuccess = STATUS_SUCCESS;
 	BOOLEAN bSuccess = FALSE;
 
-	// Á¤È®ÇÑ »çÀÌÁî¸¦ ¾ò±â À§ÇØ »ç¿ë
+	// ì •í™•í•œ ì‚¬ì´ì¦ˆë¥¼ ì–»ê¸° ìœ„í•´ ì‚¬ìš©
 	ULONG neededSize = 0;
 	ZwQuerySystemInformation(SystemModuleInformation, &neededSize, 0, &neededSize);
 
@@ -326,7 +326,7 @@ BOOLEAN ScanKernelDriverViaAPI()
 		kprintf("error.1\n");
 		goto EXIT_ERROR;
 	}
-	// Ä¿³Î µå¶óÀÌ¹ö ¸®½ºÆ® ¹öÆÛ È¹µæ
+	// ì»¤ë„ ë“œë¼ì´ë²„ ë¦¬ìŠ¤íŠ¸ ë²„í¼ íšë“
 	ntSuccess = ZwQuerySystemInformation(SystemModuleInformation, pModuleList, neededSize, 0);
 	if (!NT_SUCCESS(ntSuccess))
 	{
@@ -337,7 +337,7 @@ BOOLEAN ScanKernelDriverViaAPI()
 	uintptr_t modBaseAddress = 0;
 	ULONG modSize = 0;
 	kprintf("mod Count : %d", (int)pModuleList->ulModuleCount);
-	// Ä¿³Î µå¶óÀÌ¹ö ¿­°Å
+	// ì»¤ë„ ë“œë¼ì´ë²„ ì—´ê±°
 	for (int i = 0; i < (int)pModuleList->ulModuleCount; i++)
 	{
 		SYSTEM_MODULE mod = pModuleList->Modules[i];
@@ -346,7 +346,7 @@ BOOLEAN ScanKernelDriverViaAPI()
 		modSize = (ULONG)(pModuleList->Modules[i].Size);
 		kprintf("Path : %s Base : %llx Size : %x\n", mod.ImageName, modBaseAddress, modSize);
 
-		// system32\drivers\volmgrx.sys °°Àº ¾Æ¿¹ Á¢±ÙÀÌ ºÒ°¡´ÉÇÑ ¸ğµâÀº °É·¯³¿
+		// system32\drivers\volmgrx.sys ê°™ì€ ì•„ì˜ˆ ì ‘ê·¼ì´ ë¶ˆê°€ëŠ¥í•œ ëª¨ë“ˆì€ ê±¸ëŸ¬ëƒ„
 		bSuccess = MmIsAddressValid((PVOID)modBaseAddress);
 		if (bSuccess == FALSE)
 		{
@@ -361,7 +361,7 @@ BOOLEAN ScanKernelDriverViaAPI()
 			continue;
 		}
 
-		// ¼½¼Ç Ã¼Å© (½ºÄµ¿¡´Â ÇÊ¿äÇÏÁö´Â ¾ÊÀ¸³ª È®ÀÎ¿ëµµ)
+		// ì„¹ì…˜ ì²´í¬ (ìŠ¤ìº”ì—ëŠ” í•„ìš”í•˜ì§€ëŠ” ì•Šìœ¼ë‚˜ í™•ì¸ìš©ë„)
 		PIMAGE_SECTION_HEADER pFirstSection = (PIMAGE_SECTION_HEADER)((uintptr_t)&pHdr->FileHeader + pHdr->FileHeader.SizeOfOptionalHeader + sizeof(IMAGE_FILE_HEADER));
 		for (PIMAGE_SECTION_HEADER pSection = pFirstSection; pSection < pFirstSection + pHdr->FileHeader.NumberOfSections; pSection++)
 		{
@@ -387,9 +387,9 @@ VOID GetPsLoadedModuleList()
 }
 
 /*
-* ¿ÀºêÁ§Æ® ÀÌ¸§À» enumerateÇÏ°í ÇØ´ç ÀÌ¸§À¸·Î DriverObject¸¦ ±¸ÇÑ´Ù. 
+* ì˜¤ë¸Œì íŠ¸ ì´ë¦„ì„ enumerateí•˜ê³  í•´ë‹¹ ì´ë¦„ìœ¼ë¡œ DriverObjectë¥¼ êµ¬í•œë‹¤. 
 * 
-* ÂüÁ¶ »çÀÌÆ®
+* ì°¸ì¡° ì‚¬ì´íŠ¸
 * https://github.com/swatkat/arkitlib/blob/master/ARKitDrv/Drv.c 
 * https://github.com/ApexLegendsUC/anti-cheat-emulator/blob/master/Source.cpp
 * 
@@ -412,7 +412,7 @@ VOID EnumerateDriversViaObjectNameInside(int type, IN PUNICODE_STRING pObjectNam
 		return;
 	}
 
-	// Á¤È®ÇÑ ±¸Á¶Ã¼ »çÀÌÁî¸¦ ¸ğ¸£´Ï±î ³Ë³ËÇÏ°Ô ÆäÀÌÁö Å©±â¸¸Å­ ÇÒ´çÇÑ´Ù.
+	// ì •í™•í•œ êµ¬ì¡°ì²´ ì‚¬ì´ì¦ˆë¥¼ ëª¨ë¥´ë‹ˆê¹Œ ë„‰ë„‰í•˜ê²Œ í˜ì´ì§€ í¬ê¸°ë§Œí¼ í• ë‹¹í•œë‹¤.
 	pObjectDirectoryInformation = ExAllocatePoolWithTag(NonPagedPool, PAGE_SIZE, POOL_TAG);
 
 	RtlZeroMemory(pObjectDirectoryInformation, PAGE_SIZE);
@@ -433,7 +433,7 @@ VOID EnumerateDriversViaObjectNameInside(int type, IN PUNICODE_STRING pObjectNam
 				
 //		kprintf("[%d] %wZ %wZ ", count++, pObjectDirectoryInformation->Name, pObjectDirectoryInformation->TypeName);
 		
-		// Driver À¯Çü¸¸ ±¸ÇÔ. ³ª¸ÓÁö´Â skip. 
+		// Driver ìœ í˜•ë§Œ êµ¬í•¨. ë‚˜ë¨¸ì§€ëŠ” skip. 
 		UNICODE_STRING Driver = RTL_CONSTANT_STRING(L"Driver");
 		if (!RtlEqualUnicodeString(&Driver, &pObjectDirectoryInformation->TypeName, TRUE))
 		{
@@ -442,7 +442,7 @@ VOID EnumerateDriversViaObjectNameInside(int type, IN PUNICODE_STRING pObjectNam
 		}
 
 		UNICODE_STRING FullName;
-		FullName.MaximumLength = MAX_PATH * 2; // ¹®ÀÚ¿­ ¹öÆÛ ÃÖ´ë »çÀÌÁî
+		FullName.MaximumLength = MAX_PATH * 2; // ë¬¸ìì—´ ë²„í¼ ìµœëŒ€ ì‚¬ì´ì¦ˆ
 		WCHAR szFullName[MAX_PATH] = { 0, };
 		FullName.Buffer = szFullName;
 			
@@ -455,7 +455,7 @@ VOID EnumerateDriversViaObjectNameInside(int type, IN PUNICODE_STRING pObjectNam
 		//PVOID pObject = NULL;
 		PDRIVER_OBJECT pDriverObject = NULL;
 			
-		// ÀÌ¸§À¸·Î DriverObject ±¸ÇÏ±â
+		// ì´ë¦„ìœ¼ë¡œ DriverObject êµ¬í•˜ê¸°
 		NTSTATUS retVal = ObReferenceObjectByName(&FullName, OBJ_CASE_INSENSITIVE | OBJ_KERNEL_HANDLE, NULL, 0, *IoDriverObjectType, KernelMode, NULL, &pDriverObject);
 		if (STATUS_SUCCESS != retVal)
 		{
@@ -577,9 +577,9 @@ void EnumerateDrivers()
 			if (0 == wcscmp(pDriverListEntryObjectName->FilePath, pDriverListEntry->FilePath))
 			{				
 				isHidden = FALSE;
-				// ¼­ºñ½º ÀÌ¸§ Ã¤¿ö³Ö±â
+				// ì„œë¹„ìŠ¤ ì´ë¦„ ì±„ì›Œë„£ê¸°
 				RtlStringCchCopyW(pDriverListEntry->ServiceName, MAX_PATH, pDriverListEntryObjectName->ServiceName);
-				// µå¶óÀÌ¹ö ¿ÀºêÁ§Æ® Ã¤¿ö³Ö±â
+				// ë“œë¼ì´ë²„ ì˜¤ë¸Œì íŠ¸ ì±„ì›Œë„£ê¸°
 				pDriverListEntry->DriverObject = pDriverListEntryObjectName->DriverObject;				
 			}	
 	

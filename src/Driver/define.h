@@ -1,5 +1,5 @@
-#pragma once
+ï»¿#pragma once
 
-#define kprintf(...) KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, __VA_ARGS__)) // DbgPrint()¸¦ »ç¿ëÇÑ °æ¿ì ·ÎµùÀÌ µÇÁö ¾Ê¾Ò´ø ¹®Á¦ ¹ß»ı
+#define kprintf(...) KdPrintEx((DPFLTR_IHVDRIVER_ID, DPFLTR_INFO_LEVEL, __VA_ARGS__)) // DbgPrint()ë¥¼ ì‚¬ìš©í•œ ê²½ìš° ë¡œë”©ì´ ë˜ì§€ ì•Šì•˜ë˜ ë¬¸ì œ ë°œìƒ
 #define POOL_TAG 'coTr'
 
