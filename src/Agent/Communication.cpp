@@ -1,4 +1,4 @@
-#include "pch.h"
+Ôªø#include "pch.h"
 #include "Communication.h"
 #include "LoadDriver.h"
 #include <devioctl.h>
@@ -12,7 +12,6 @@
 CCommunication::CCommunication()
 {
 	m_hDevice = NULL;
-	m_pDriverEntry = NULL;
 }
 CCommunication::~CCommunication()
 {
@@ -64,7 +63,7 @@ BOOL CCommunication::HideDriver(LPCWSTR pDriverPath, LPCWSTR pServiceName, PBOOL
 {
 	DWORD dwRetBytes = 0;
 	WCHAR szYes[4] = { 0, };
-	// nullΩ∫∆Æ∏µ ∆˜«‘
+	// nullÏä§Ìä∏ÎßÅ Ìè¨Ìï®
 	CString SendData;	
 	SendData.Format(L"%s::%s", pDriverPath, pServiceName);
 	BOOL bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_HIDE_DRIVER, (LPVOID)SendData.GetBuffer(), (DWORD)(wcslen(SendData.GetBuffer())*2 + 2), szYes, (DWORD)sizeof(szYes), &dwRetBytes, NULL);
@@ -85,37 +84,32 @@ BOOL CCommunication::HideDriver(LPCWSTR pDriverPath, LPCWSTR pServiceName, PBOOL
 
 BOOL CCommunication::GetDrivers()
 {
-	if (m_pDriverEntry)
-	{
-		delete[] m_pDriverEntry;
-		m_pDriverEntry = NULL;
-	}
+	m_DriverListEntry.clear();
+
 	DWORD dwRetBytes = 0;
-	// « ø‰«— πˆ∆€ ªÁ¿Ã¡Ó∏¶ πØ¥¬¥Ÿ.
+	// ÌïÑÏöîÌïú Î≤ÑÌçº ÏÇ¨Ïù¥Ï¶àÎ•º Î¨ªÎäîÎã§.
 	BOOL bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_LOAD_DRIVER, NULL, 0, NULL, 0, &dwRetBytes, NULL);
-	int nNeed = dwRetBytes / sizeof(DRIVER_LIST_ENTRY);
-	m_pDriverEntry = new DRIVER_LIST_ENTRY[nNeed];
-	ZeroMemory(m_pDriverEntry, sizeof(DRIVER_LIST_ENTRY) * nNeed);
-	// ¡§»Æ«— ªÁ¿Ã¡Ó∏¶ ∞°¡ˆ∞Ì µµ¿¸
-	bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_LOAD_DRIVER, NULL, 0, m_pDriverEntry, sizeof(DRIVER_LIST_ENTRY) * nNeed, &dwRetBytes, NULL);
+	printf("1. dwret : %d\n", dwRetBytes);
+
+	// Ï†ïÌôïÌïú ÏÇ¨Ïù¥Ï¶àÎ•º Í∞ÄÏßÄÍ≥† ÎèÑÏ†Ñ
+	m_DriverListEntry.resize(dwRetBytes / sizeof(DRIVER_LIST_ENTRY));
+	bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_LOAD_DRIVER, NULL, 0, &m_DriverListEntry.front(), dwRetBytes, &dwRetBytes, NULL);
 	if (FALSE == bSuccess || dwRetBytes == 0)
 	{		
 		return FALSE;
 	}
-	m_nDriverListEntryCount = dwRetBytes / sizeof(DRIVER_LIST_ENTRY);
+	printf("2. dwret : %d\n", dwRetBytes);
 	return TRUE;
 }
 
-BOOL CCommunication::ScanPattern(PBYTE pPattern, int nPatternSize)
+BOOL CCommunication::ScanPattern(PBYTE pPattern, size_t nPatternSize)
 {
-	if (m_pDetectEntry)
-	{
-		delete[] m_pDetectEntry;
-		m_pDetectEntry = NULL;
-	}
+	m_DetectListEntry.clear();
+
 	DWORD dwRetBytes = 0;
-	// « ø‰«— πˆ∆€ ªÁ¿Ã¡Ó∏¶ πØ¥¬¥Ÿ.
-	BOOL bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_SCAN_PATTERN, pPattern, nPatternSize, NULL, 0, &dwRetBytes, NULL);
+
+	// ÌïÑÏöîÌïú Î≤ÑÌçº ÏÇ¨Ïù¥Ï¶àÎ•º Î¨ªÎäîÎã§.
+	BOOL bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_SCAN_PATTERN, pPattern, (DWORD)nPatternSize, NULL, 0, &dwRetBytes, NULL);
 	printf("1. dwret : %d\n", dwRetBytes);
 	if (FALSE == bSuccess)
 	{		
@@ -123,21 +117,19 @@ BOOL CCommunication::ScanPattern(PBYTE pPattern, int nPatternSize)
 	}
 	if (dwRetBytes == 0)
 	{
-		m_nDetectListEntryCount = 0;
 		return TRUE;
 	}
+	
+	// Ï†ïÌôïÌïú ÏÇ¨Ïù¥Ï¶àÎ•º Í∞ÄÏßÄÍ≥† ÎèÑÏ†Ñ
+	m_DetectListEntry.resize(dwRetBytes / sizeof(DETECT_LIST_ENTRY));
 
-	int nNeed = dwRetBytes / sizeof(DETECT_LIST_ENTRY);
-	m_pDetectEntry = new DETECT_LIST_ENTRY[nNeed];
-	ZeroMemory(m_pDetectEntry, sizeof(DETECT_LIST_ENTRY) * nNeed);
-	// ¡§»Æ«— ªÁ¿Ã¡Ó∏¶ ∞°¡ˆ∞Ì µµ¿¸
-	bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_SCAN_PATTERN, NULL, 0, m_pDetectEntry, sizeof(DETECT_LIST_ENTRY) * nNeed, &dwRetBytes, NULL);
+	bSuccess = DeviceIoControl(m_hDevice, IOCTL_KERNELV_SCAN_PATTERN, NULL, 0, &m_DetectListEntry.front(), dwRetBytes, &dwRetBytes, NULL);
 	if (FALSE == bSuccess)
 	{		
 		return FALSE;
 	}
 	printf("2. dwret : %d\n", dwRetBytes);
-	m_nDetectListEntryCount = dwRetBytes / sizeof(DETECT_LIST_ENTRY);
+
 	
 	return TRUE;
 }

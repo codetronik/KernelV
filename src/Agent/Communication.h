@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+using namespace std;
 
 typedef struct _DRIVER_LIST_ENTRY {
 	uintptr_t modBaseAddress;
@@ -28,12 +30,11 @@ public:
 	void Finalize();
 	BOOL GetDrivers();
 	BOOL HideMyself();
-	BOOL ScanPattern(PBYTE pPattern, int nPatternSize);
+	BOOL ScanPattern(PBYTE pPattern, size_t nPatternSize);
 	BOOL HideDriver(LPCWSTR pDriverPath, LPCWSTR pServiceName, PBOOL pbHide);
-	PDRIVER_LIST_ENTRY m_pDriverEntry;
-	int m_nDriverListEntryCount;
-	PDETECT_LIST_ENTRY m_pDetectEntry;
-	int m_nDetectListEntryCount;
+	vector<DRIVER_LIST_ENTRY> m_DriverListEntry;
+	vector<DETECT_LIST_ENTRY> m_DetectListEntry;
+
 private:
 	HANDLE m_hDevice;
 };

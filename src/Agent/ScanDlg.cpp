@@ -5,6 +5,9 @@
 #include "Agent.h"
 #include "ScanDlg.h"
 #include "afxdialogex.h"
+#include <vector>
+
+using namespace std;
 
 // CScan 대화 상자
 
@@ -69,8 +72,7 @@ void CScan::OnBnClickedButtonScan()
 	CString strMsg; 
 	CString result;
 
-	PBYTE pPattern = (PBYTE)malloc(5000); // free() 필요
-	ZeroMemory(pPattern, 5000);
+	vector<BYTE> Pattern;
 
 	CString strEdit; // 에디트 컨트롤에서 가져온 문자열
 	GetDlgItemTextW(IDC_EDIT_PATTERN, strEdit);
@@ -90,7 +92,6 @@ void CScan::OnBnClickedButtonScan()
 		goto EXIT_ERROR;
 	}
 		
-	int nPatternIndex = 0;
 	int nPatternCount = 0;
 
 	while (!strEdit.IsEmpty())
@@ -116,24 +117,24 @@ void CScan::OnBnClickedButtonScan()
 			goto EXIT_ERROR;
 		}
 		// 시작 패턴을 알리는 signature
-		pPattern[nPatternIndex++] = 'S';
-		pPattern[nPatternIndex++] = 'T';
-		pPattern[nPatternIndex++] = 'a';
-		pPattern[nPatternIndex++] = 'r';
-		pPattern[nPatternIndex++] = 't';
+		Pattern.push_back('S');
+		Pattern.push_back('T');
+		Pattern.push_back('a');
+		Pattern.push_back('r');
+		Pattern.push_back('t');
 
 		// 한줄읽은거에서 바이트 형식으로 변환
 		for (int j = 0; j < nLineLen; j = j + 2)
 		{
 			WCHAR temp[5] = { 0, };
 			wcsncpy_s(temp, 5, strLine.GetBuffer() + j, 2);
-			pPattern[nPatternIndex++] = (BYTE)wcstoul(temp, NULL, 16);
+			Pattern.push_back((BYTE)wcstoul(temp, NULL, 16));
 		}
 	
 		// 끝 패턴을 알리는 signature
-		pPattern[nPatternIndex++] = 'e';
-		pPattern[nPatternIndex++] = 'n';
-		pPattern[nPatternIndex++] = 'D';
+		Pattern.push_back('e');
+		Pattern.push_back('n');
+		Pattern.push_back('D');
 
 		nPatternCount++;				
 	}
@@ -144,52 +145,53 @@ void CScan::OnBnClickedButtonScan()
 	// 잘 들어갔는지 로깅	
 	char* szBuffer = (char*)malloc(5000);
 	memset(szBuffer, 0, 5000);
-	printf("pattern size : %d\n", nPatternIndex);
-	for (int i = 0; i < nPatternIndex; i++)
+	printf("pattern size : %zd\n", Pattern.size());
+	for (int i = 0; i < Pattern.size(); i++)
 	{
 		if (i % 16 == 0)
 		{
 			strcat_s(szBuffer, 5000, "\r\n");
 		}
 		char temp[5] = { 0, };
-		sprintf_s(temp, 5, "%02x ", *(pPattern + i));
+		sprintf_s(temp, 5, "%02x ", Pattern[i]);
 		strcat_s(szBuffer, 5000, temp);
 	}
 	printf("%s\r\n", szBuffer);
 	free(szBuffer);
 
-	BOOL bSuccess = m_cComm.ScanPattern(pPattern, nPatternIndex);
+	BOOL bSuccess = m_cComm.ScanPattern(&Pattern.front(), Pattern.size());
 	if (FALSE == bSuccess)
 	{
 		AfxMessageBox(L"failed to communicate with driver.");
 		goto EXIT_ERROR;
 	}
+	
 	// 0개 검출시 1바이트가 리턴옴
-	if (m_cComm.m_nDetectListEntryCount == 0)
+	if (m_cComm.m_DetectListEntry.size() == 0)
 	{
 		m_cResult.SetWindowText(L"No pattern detected.");
 		goto EXIT;
 	}
 	
 
-	for (int i = 0; i < m_cComm.m_nDetectListEntryCount; i++)
+	for (int i = 0; i < m_cComm.m_DetectListEntry.size(); i++)
 	{
-		for (int j = 0; j < m_cComm.m_nDriverListEntryCount; j++)
+		for (int j = 0; j < m_cComm.m_DriverListEntry.size(); j++)
 		{
-			if (m_cComm.m_pDriverEntry[j].modBaseAddress == m_cComm.m_pDetectEntry[i].BaseAddress)
+			if (m_cComm.m_DriverListEntry[j].modBaseAddress == m_cComm.m_DetectListEntry[i].BaseAddress)
 			{
-				strMsg.Format(L"Pattern No (%d) Base : %llX Offset : %X %s\r\n", m_cComm.m_pDetectEntry[i].PatternNo, m_cComm.m_pDetectEntry[i].BaseAddress, m_cComm.m_pDetectEntry[i].Offset, m_cComm.m_pDriverEntry[j].FilePath);
+				strMsg.Format(L"Pattern No (%d) Base : %llX Offset : %X %s\r\n", 
+					m_cComm.m_DetectListEntry[i].PatternNo, 
+					m_cComm.m_DetectListEntry[i].BaseAddress, 
+					m_cComm.m_DetectListEntry[i].Offset, 
+					m_cComm.m_DriverListEntry[j].FilePath);
 				result = result + strMsg;
 			}
 		}		
-	}
+	}	
+	m_cComm.m_DetectListEntry.clear();
 	m_cResult.SetWindowText(result);
-	if (m_cComm.m_pDetectEntry)
-	{
-		delete[] m_cComm.m_pDetectEntry;
-		m_cComm.m_pDetectEntry = NULL;
-	}
 EXIT:
 EXIT_ERROR:
-	if (pPattern) free(pPattern);
+	return;
 }

@@ -231,29 +231,29 @@ void CAgentDlg::OnDriverRefreshList()
 		return;
 	}
 	m_cList.DeleteAllItems();
-	for (int i = 0; i < m_cComm.m_nDriverListEntryCount; i++)
+	for (int i = 0; i < m_cComm.m_DriverListEntry.size(); i++)
 	{
 		int nIndex = m_cList.InsertItem(m_cList.GetItemCount(), L"");
 		CString str;
 		str.Format(L"%d", nIndex);
 		m_cList.SetItem(nIndex, 0, LVIF_TEXT, str, NULL, NULL, NULL, NULL);
 
-		str.Format(L"%llx", m_cComm.m_pDriverEntry[i].modBaseAddress);
+		str.Format(L"%llx", m_cComm.m_DriverListEntry[i].modBaseAddress);
 		str.MakeUpper();
 		m_cList.SetItem(nIndex, 1, LVIF_TEXT, str, NULL, NULL, NULL, NULL);
 
-		str.Format(L"%x", m_cComm.m_pDriverEntry[i].modSize);
+		str.Format(L"%x", m_cComm.m_DriverListEntry[i].modSize);
 		str.MakeUpper();
 		m_cList.SetItem(nIndex, 2, LVIF_TEXT, str, NULL, NULL, NULL, NULL);
-		if (m_cComm.m_pDriverEntry[i].DriverObject != 0)
+		if (m_cComm.m_DriverListEntry[i].DriverObject != 0)
 		{
-			str.Format(L"%llx", m_cComm.m_pDriverEntry[i].DriverObject);
+			str.Format(L"%llx", m_cComm.m_DriverListEntry[i].DriverObject);
 			str.MakeUpper();
 			m_cList.SetItem(nIndex, 3, LVIF_TEXT, str, NULL, NULL, NULL, NULL);
 		}
-		m_cList.SetItem(nIndex, 4, LVIF_TEXT, m_cComm.m_pDriverEntry[i].FilePath, NULL, NULL, NULL, NULL);
-		m_cList.SetItem(nIndex, 5, LVIF_TEXT, m_cComm.m_pDriverEntry[i].ServiceName, NULL, NULL, NULL, NULL);
-		if (TRUE == m_cComm.m_pDriverEntry[i].isHidden)
+		m_cList.SetItem(nIndex, 4, LVIF_TEXT, m_cComm.m_DriverListEntry[i].FilePath, NULL, NULL, NULL, NULL);
+		m_cList.SetItem(nIndex, 5, LVIF_TEXT, m_cComm.m_DriverListEntry[i].ServiceName, NULL, NULL, NULL, NULL);
+		if (TRUE == m_cComm.m_DriverListEntry[i].isHidden)
 		{
 			m_cList.SetItem(nIndex, 6, LVIF_TEXT, L"YES", NULL, NULL, NULL, NULL);
 		}
