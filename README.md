@@ -11,7 +11,7 @@ Built in Visual Studio 2019 + wdk 10.0.19041.0
 
 Tested on Windows 10 Build 19041 64-bit version.
 
-(Suitable version for Windows 11 Comming soon)
+It still works on Windows 11 Build 220000
 
 ## Features
 - Scan binary patterns in kernel drivers
