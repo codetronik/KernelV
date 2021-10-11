@@ -1,7 +1,7 @@
 # KernelV
 ![image](https://raw.githubusercontent.com/codetronik/KernelV/master/screenshots/mainmenu.png)
 
-Rootkit & Anti-Rootkit (Windows 10 x64 only)
+Rootkit & Anti-Rootkit (Windows 10/11 x64 only)
 
 Download : https://github.com/codetronik/KernelV/releases
 
