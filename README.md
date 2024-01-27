@@ -37,3 +37,5 @@ Hiding a driver can cause BSOD. (19 : Loaded module list modification)
 
 ## Codesign
 The built driver I provide is signed with the "HT Srl" certificate. It is highly likely to be detected in the anti-virus.
+
+As of January 2024, the certificate has been blocked and cannot be executed.
